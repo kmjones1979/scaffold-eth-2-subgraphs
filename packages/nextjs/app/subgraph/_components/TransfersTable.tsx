@@ -10,7 +10,7 @@ const TransfersTable = () => {
       id
       from
       to
-      value
+      tokenId
     }
   }
 `;
@@ -32,7 +32,7 @@ const TransfersTable = () => {
               <th className="bg-primary"></th>
               <th className="bg-primary">From</th>
               <th className="bg-primary">To</th>
-              <th className="bg-primary">Value</th>
+              <th className="bg-primary">TokenID</th>
             </tr>
           </thead>
           <tbody>
@@ -46,7 +46,7 @@ const TransfersTable = () => {
                   <td>
                     <Address address={transfer.to} />
                   </td>
-                  <td>{transfer.value}</td>
+                  <td>{transfer.tokenId}</td>
                 </tr>
               );
             })}
