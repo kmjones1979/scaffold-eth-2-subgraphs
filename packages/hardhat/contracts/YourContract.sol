@@ -13,7 +13,7 @@ contract YourContract is Ownable, ERC721, ERC721URIStorage, ERC721Enumerable {
 
 	Counters.Counter public tokenIdCounter;
 
-	constructor() ERC721("YourCollectible", "YCB") {}
+	constructor() ERC721("YourNFT", "NFT") {}
 
 	function _baseURI() internal pure override returns (string memory) {
 		return "https://ipfs.io/ipfs/";
