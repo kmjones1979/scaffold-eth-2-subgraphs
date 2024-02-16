@@ -1,38 +1,59 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-// Useful for debugging. Remove when deploying to a live network.
-import "hardhat/console.sol";
-
-// Use openzeppelin to inherit battle-tested implementations (ERC20, ERC721, etc)
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-/**
- * A smart contract that allows changing a state variable of the contract and tracking the changes
- * It also allows the owner to withdraw the Ether in the contract
- * @author BuidlGuidl
- */
-contract YourContract is Ownable, ERC20 {
+contract YourContract is Ownable, ERC721, ERC721URIStorage, ERC721Enumerable {
 
-	// Constructor: Called once on contract deployment
-	// Check packages/hardhat/deploy/00_deploy_your_contract.ts
-	constructor() ERC20("YourToken", "YT") {
-		// Mint 1 million tokens to the address below
-		_mint(0x1234567890123456789012345678901234567890, 1000000 * (10 ** uint256(decimals())));
+	using Counters for Counters.Counter;
+
+	Counters.Counter public tokenIdCounter;
+
+	constructor() ERC721("YourCollectible", "YCB") {}
+
+	function _baseURI() internal pure override returns (string memory) {
+		return "https://ipfs.io/ipfs/";
 	}
 
-	/**
-	 * Function that allows the owner to withdraw all the Ether in the contract
-	 * The function can only be called by the owner of the contract as defined by the isOwner modifier
-	 */
-	function withdraw() public onlyOwner {
-		(bool success, ) = msg.sender.call{ value: address(this).balance }("");
-		require(success, "Failed to send Ether");
+	function mintItem(address to, string memory uri) public returns (uint256) {
+		tokenIdCounter.increment();
+		uint256 tokenId = tokenIdCounter.current();
+		_safeMint(to, tokenId);
+		_setTokenURI(tokenId, uri);
+		return tokenId;
 	}
 
-	/**
-	 * Function that allows the contract to receive ETH
-	 */
-	receive() external payable {}
+    // The following functions are overrides required by Solidity.
+
+	function _beforeTokenTransfer(
+		address from,
+		address to,
+		uint256 tokenId,
+        uint256 batchSize
+	) internal override(ERC721, ERC721Enumerable) {
+		super._beforeTokenTransfer(from, to, tokenId, batchSize);
+	}
+
+	function _burn(
+		uint256 tokenId
+	) internal override(ERC721, ERC721URIStorage) {
+		super._burn(tokenId);
+	}
+
+	function tokenURI(
+		uint256 tokenId
+	) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+		return super.tokenURI(tokenId);
+	}
+
+	function supportsInterface(
+		bytes4 interfaceId
+	) public view override(ERC721, ERC721URIStorage, ERC721Enumerable) returns (bool) {
+		return super.supportsInterface(interfaceId);
+	}
+
 }
