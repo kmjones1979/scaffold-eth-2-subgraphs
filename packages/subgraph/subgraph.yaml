@@ -9,23 +9,32 @@ dataSources:
     network: localhost
     source:
       abi: YourContract
-      address: "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d"
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - Approval
+        - ApprovalForAll
+        - BatchMetadataUpdate
+        - MetadataUpdate
         - OwnershipTransferred
         - Transfer
       abis:
         - name: YourContract
           file: ./abis/localhost_YourContract.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,uint256)
+        - event: Approval(indexed address,indexed address,indexed uint256)
           handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: BatchMetadataUpdate(uint256,uint256)
+          handler: handleBatchMetadataUpdate
+        - event: MetadataUpdate(uint256)
+          handler: handleMetadataUpdate
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-        - event: Transfer(indexed address,indexed address,uint256)
+        - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/mapping.ts
